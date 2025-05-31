@@ -66,6 +66,7 @@ export const updateContactByIdController = async (req, res, next) => {
     next(createHttpError(404, 'Contact not found'));
     return;
   }
+
   const status = result.isNew ? 201 : 200;
 
   res.json({
