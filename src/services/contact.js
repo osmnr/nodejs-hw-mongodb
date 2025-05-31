@@ -23,3 +23,30 @@ export const createContact = async (payload) => {
     return contact;
 
 }
+
+export const cancelConctactById = async (contactId) => {
+    const contact_instance = await ContactCollection.findOneAndDelete({
+        _id:contactId
+    });
+    return contact_instance;
+    }
+
+
+export const updateContactById = async (contactId, payload, options={}) => {
+    const rawResult = await ContactCollection.findOneAndUpdate({
+        _id:contactId },
+        payload,
+    {
+      new: true,
+      includeResultMetadata: true,
+      ...options,
+    });
+
+    if (!rawResult || !rawResult.value) {
+        return null
+    }
+    return {
+    student: rawResult.value,
+    isNew: Boolean(rawResult?.lastErrorObject?.upserted),
+  };
+};
