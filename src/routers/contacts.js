@@ -1,25 +1,29 @@
 import { Router } from 'express';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+import {createContactSchema, updateContactSchema} from '../validations/contact.js';
+import { validateBody } from '../middlewares/validateBody.js';
+import { isValidId } from '../middlewares/isValidId.js';
+import { authenticate } from '../middlewares/authenticate.js';
+import { checkContactUser } from '../middlewares/checkContactUser.js';
+import { upload } from '../middlewares/multer.js';
 import { getAllContactsController, 
     getContactByIdController, 
     createContactController, 
     deleteContactByIdController,
     updateContactByIdController } from '../controllers/contacts.js';
 
-import { validateBody } from '../middlewares/validateBody.js';
-import {createContactSchema, updateContactSchema} from '../validations/contact.js';
-import { isValidId } from '../middlewares/isValidId.js';
-
 const router = Router();
 
-router.get('/contacts', ctrlWrapper(getAllContactsController));
+router.use(authenticate);
 
-router.get('/contacts/:contactId', isValidId, ctrlWrapper(getContactByIdController));
-
-router.post('/contacts', validateBody(createContactSchema), ctrlWrapper(createContactController));
-
-router.delete('/contacts/:contactId', isValidId, ctrlWrapper(deleteContactByIdController));
-
-router.patch('/contacts/:contactId', isValidId, validateBody(updateContactSchema), ctrlWrapper(updateContactByIdController));
+router.get('/', checkContactUser, ctrlWrapper(getAllContactsController));
+router.post('/', checkContactUser, upload.single('photo'), validateBody(createContactSchema), ctrlWrapper(createContactController));
+router.post('/register', isValidId, checkContactUser, validateBody(createContactSchema),ctrlWrapper(createContactController));
+router.get('/:contactId', isValidId, checkContactUser, ctrlWrapper(getContactByIdController));
+router.delete('/:contactId', isValidId, checkContactUser, ctrlWrapper(deleteContactByIdController));
+router.patch('/:contactId', isValidId, checkContactUser, upload.single('photo'), validateBody(updateContactSchema), ctrlWrapper(updateContactByIdController));
 
 export default router;
+
+
+
