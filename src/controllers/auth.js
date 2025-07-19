@@ -2,7 +2,9 @@ import { ONE_MONTH } from '../constants/index.js';
 import { registerUser,
         loginUser,  
         logoutUser, 
-        refreshUsersSession} from '../services/auth.js';
+        refreshUsersSession,
+        resetPassword,
+        requestResetToken} from '../services/auth.js';
 
 export const registerUserController = async (req, res) => {
   const user = await registerUser(req.body);
